@@ -53,6 +53,14 @@ export const useUserStore = defineStore(
       resetStore();
     };
 
+    const getFriends = async () => {
+      await fetchy("/api/friends", "GET");
+    };
+
+    const getFriendRequest = async () => {
+      await fetchy("/api/friend/requests", "GET");
+    };
+
     return {
       currentUsername,
       isLoggedIn,
@@ -63,6 +71,8 @@ export const useUserStore = defineStore(
       updateUserUsername,
       updateUserPassword,
       deleteUser,
+      getFriends,
+      getFriendRequest,
     };
   },
   { persist: true },

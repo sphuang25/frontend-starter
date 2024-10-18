@@ -3,14 +3,9 @@ import { ObjectId } from "mongodb";
 import DocCollection, { BaseDoc } from "../framework/doc";
 import { NotAllowedError, NotFoundError } from "./errors";
 
-export interface PostOptions {
-  backgroundColor?: string;
-}
-
 export interface PostDoc extends BaseDoc {
   author: ObjectId;
   content: string;
-  options?: PostOptions;
 }
 
 /**
@@ -26,9 +21,9 @@ export default class PostingConcept {
     this.posts = new DocCollection<PostDoc>(collectionName);
   }
 
-  async create(author: ObjectId, content: string, options?: PostOptions) {
-    const _id = await this.posts.createOne({ author, content, options });
-    return { msg: "Post successfully created!", post: await this.posts.readOne({ _id }) };
+  async create(author: ObjectId, content: string) {
+    const _id = await this.posts.createOne({ author, content });
+    return { msg: "Post successfully created!", post: await this.posts.readOne({ _id }), postID: _id };
   }
 
   async getPosts() {
@@ -40,10 +35,18 @@ export default class PostingConcept {
     return await this.posts.readMany({ author });
   }
 
-  async update(_id: ObjectId, content?: string, options?: PostOptions) {
+  async getAuthorOfPost(postID: ObjectId) {
+    const post = await this.posts.readOne({ _id: postID });
+    if (!post) {
+      throw new NotFoundError(`Post ${postID} does not exist!`);
+    }
+    return post.author;
+  }
+
+  async update(_id: ObjectId, content?: string) {
     // Note that if content or options is undefined, those fields will *not* be updated
     // since undefined values for partialUpdateOne are ignored.
-    await this.posts.partialUpdateOne({ _id }, { content, options });
+    await this.posts.partialUpdateOne({ _id }, { content });
     return { msg: "Post successfully updated!" };
   }
 
