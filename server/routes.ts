@@ -36,7 +36,7 @@ class Routes {
   async createUser(session: SessionDoc, username: string, password: string) {
     Sessioning.isLoggedOut(session);
     const message = await Authing.create(username, password);
-    Interfacing.createInterface(message.id);
+    await Interfacing.createInterface(message.id);
     return message;
   }
 
@@ -209,7 +209,7 @@ class Routes {
   async setInterface(session: SessionDoc, interfaceType: string) {
     const user = Sessioning.getUser(session);
     const interfaceItem = await Interfacing.getInterfaceEnumBystring(interfaceType);
-    Interfacing.switchInterface(user, interfaceItem);
+    await Interfacing.switchInterface(user, interfaceItem);
     return { msg: `You now have interface ${interfaceType}.`, interfaceType: interfaceType };
   }
 

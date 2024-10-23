@@ -1,30 +1,39 @@
 <script setup lang="ts">
-import { useUserStore } from "@/stores/user";
-import { ref } from "vue";
+import { onBeforeMount, ref } from "vue";
+import { fetchy } from "../../utils/fetchy";
+import SendFriendRequestForm from "./SendFriendRequestForm.vue";
 
 let username = ref("");
-let currentPassword = ref("");
-let newPassword = ref("");
 
-const { updateUserUsername, updateUserPassword, updateSession } = useUserStore();
+const loaded = ref(false);
 
-async function updateUsername() {
-  await updateUserUsername(username.value);
-  await updateSession();
-  username.value = "";
+let friendRequests = ref<Array<Record<string, string>>>([]);
+let notFriendList = ref<Array<Record<string, string>>>([]);
+
+async function getFriendRequests() {
+  let friendRequestsResults;
+  try {
+    friendRequestsResults = await fetchy("/api/friend/requests", "GET", {});
+  } catch (_) {
+    return;
+  }
+  friendRequests.value = friendRequestsResults;
 }
 
-async function updatePassword() {
-  await updateUserPassword(currentPassword.value, newPassword.value);
-  await updateSession();
-  currentPassword.value = newPassword.value = "";
-}
+onBeforeMount(async () => {
+  await getFriendRequests();
+  loaded.value = true;
+});
 </script>
 
 <template>
   <h2>Friends</h2>
-  
+
   <h2>Requests</h2>
-
-
+  <SendFriendRequestForm @refreshFriends="getFriendRequests" />
+  <section class="friendRequests" v-if="loaded && friendRequests.length !== 0">
+    <article v-for="friendRequest in friendRequests" :key="friendRequest._id">
+      <!-- <FriendRequest v-if="friendRequest.status === 'pending'" :friendRequest="friendRequest" @refreshRequest="getFriendRequests" /> -->
+    </article>
+  </section>
 </template>

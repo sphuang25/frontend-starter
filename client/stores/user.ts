@@ -57,7 +57,7 @@ export const useUserStore = defineStore(
       await fetchy("/api/friends", "GET");
     };
 
-    const getFriendRequest = async () => {
+    const getFriendRequests = async () => {
       await fetchy("/api/friend/requests", "GET");
     };
 
@@ -72,7 +72,7 @@ export const useUserStore = defineStore(
       updateUserPassword,
       deleteUser,
       getFriends,
-      getFriendRequest,
+      getFriendRequests,
     };
   },
   { persist: true },
