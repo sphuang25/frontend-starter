@@ -121,6 +121,20 @@ class Routes {
     return await Friending.removeFriend(user, friendOid);
   }
 
+  @Router.get("/friend/notfriend")
+  async notFriend(session: SessionDoc) {
+    const user = Sessioning.getUser(session);
+    const friendsName = await Authing.idsToUsernames(await Friending.getFriends(user));
+    const allUserNames = (await Authing.getUsers("")).map((x) => x.username);
+    const notFriendList = [];
+    for (const uName of allUserNames) {
+      if (!(uName in friendsName)) {
+        notFriendList.push(uName);
+      }
+    }
+    return notFriendList;
+  }
+
   @Router.get("/friend/requests")
   async getRequests(session: SessionDoc) {
     const user = Sessioning.getUser(session);

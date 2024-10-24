@@ -1,6 +1,8 @@
 import "@/assets/main.css";
 import "purecss";
 
+import "bootstrap";
+import "bootstrap/dist/css/bootstrap.min.css";
 import { createPinia } from "pinia";
 import piniaPluginPersistedState from "pinia-plugin-persistedstate";
 import { createApp } from "vue";

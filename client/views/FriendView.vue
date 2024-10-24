@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import FriendListingView from "@/components/Friend/FriendListingView.vue";
+import FriendListingComponent from "@/components/Friend/FriendListComponent.vue";
 import router from "@/router";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
@@ -21,6 +21,6 @@ async function delete_() {
 <template>
   <main class="column">
     <h1>Your Friends</h1>
-    <FriendListingView />
+    <FriendListingComponent />
   </main>
 </template>
