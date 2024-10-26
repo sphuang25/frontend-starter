@@ -68,7 +68,7 @@ export default class LabellingConcept {
   async removeLabelByIndex(item: ObjectId, index: string) {
     const targetLabelDoc = await this.getLabelDoc(item);
 
-    const numIdx = parseInt(index) - 1;
+    const numIdx = parseInt(index);
 
     const toRemove = targetLabelDoc.label[numIdx];
 

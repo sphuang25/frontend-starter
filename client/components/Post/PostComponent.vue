@@ -24,7 +24,7 @@ const deletePost = async () => {
   <div class="base">
     <menu v-if="props.post.author == currentUsername">
       <li><button class="btn-small pure-button" @click="emit('editLabel', props.post._id)">Edit Label</button></li>
-      <li><button class="btn-small pure-button" @click="emit('editPost', props.post._id)">Edit</button></li>
+      <li><button class="btn-small pure-button" @click="emit('editPost', props.post._id)">Edit Post</button></li>
       <li><button class="button-error btn-small pure-button" @click="deletePost">Delete</button></li>
     </menu>
     <article class="timestamp">

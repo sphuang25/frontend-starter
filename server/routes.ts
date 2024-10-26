@@ -191,7 +191,7 @@ class Routes {
     return label;
   }
 
-  @Router.post("/label/removeIdx")
+  @Router.post("/label/removeIdx/:id")
   async deleteLabelByIndex(session: SessionDoc, id: string, labelIdx: string) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(id);

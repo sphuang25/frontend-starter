@@ -5,9 +5,8 @@ import { fetchy } from "../../utils/fetchy";
 const props = defineProps(["post"]);
 const emit = defineEmits(["editLabel", "refreshPosts"]);
 const labelStringsRef = ref(Array<string>);
-const itemRefs = ref([]);
-
 const numLabels = computed(() => labelStringsRef.value.length);
+const newLabel = ref("");
 
 const getLabel = async () => {
   try {
@@ -15,6 +14,16 @@ const getLabel = async () => {
   } catch (e) {
     return;
   }
+};
+
+const addLabel = async (content: string) => {
+  await fetchy(`/api/label/add/${props.post._id}`, "POST", { body: { content: content } });
+  await getLabel();
+};
+
+const deleteLabelByIdx = async (index: number) => {
+  await fetchy(`/api/label/removeIdx/${props.post._id}`, "POST", { body: { labelIdx: index.toString() } });
+  await getLabel();
 };
 
 const editLabel = async (content: string) => {
@@ -34,7 +43,13 @@ onBeforeMount(async () => {
 
 <template>
   <p class="author">{{ props.post._id }}</p>
-
+  <p><input id="content" v-model="newLabel" placeholder="label here!" required /></p>
+  <button class="btn-small pure-button-primary pure-button" @click="addLabel(newLabel)" type="submit">Add Label</button>
+  <p v-for="(item, index) in labelStringsRef" :key="index">
+    {{ labelStringsRef[index] }}
+    <button class="button-error btn-small pure-button" @click="deleteLabelByIdx(Number(index))" type="submit">Delete</button>
+  </p>
+  <button class="btn-small pure-button" @click="emit('editLabel')">Finish Label</button>
   <!-- <form @submit.prevent="editPost(content)">
     <p class="author">{{ props.post.author }}</p>
     <textarea id="content" v-model="content" placeholder="Create a post!" required> </textarea>
@@ -60,9 +75,17 @@ form {
 textarea {
   font-family: inherit;
   font-size: inherit;
-  height: 6em;
+  height: 2em;
   border-radius: 4px;
+
   resize: none;
+}
+
+button {
+  font-family: inherit;
+  font-size: inherit;
+  height: 2em;
+  width: 10em;
 }
 
 input {
@@ -76,6 +99,8 @@ input {
 
 p {
   margin: 0em;
+  flex-direction: row;
+  align-items: center;
 }
 
 .author {
