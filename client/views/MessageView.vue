@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import FriendListComponent from "@/components/Friend/FriendListComponent.vue";
+import MessageListComponent from "@/components/Message/MessageListComponent.vue";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
 
@@ -8,7 +8,7 @@ const { currentUsername } = storeToRefs(useUserStore());
 
 <template>
   <main class="column">
-    <h1>Your Friends</h1>
-    <FriendListComponent />
+    <h1>Messages</h1>
+    <MessageListComponent />
   </main>
 </template>

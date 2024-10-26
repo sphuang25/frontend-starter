@@ -96,6 +96,11 @@ export default class MessagingConcept {
     return messageRecordsUser;
   }
 
+  async getAllMessageinConversion(userID: ObjectId, user2ID: ObjectId) {
+    const messageRecordsUser = await this.messageRecords.readMany({ $or: [{ sender: userID, receiver: user2ID }, { sender: user2ID, receiver: userID }] });
+    return messageRecordsUser;
+  }
+
   async getAllMessageUser(userID: ObjectId) {
     const messageRecordsUser = await this.getAllMessageRecordUser(userID);
     const messagesUser = messageRecordsUser.map((x) => x.message);

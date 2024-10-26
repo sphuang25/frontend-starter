@@ -5,6 +5,7 @@ import { useUserStore } from "@/stores/user";
 import FriendView from "../views/FriendView.vue";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
+import MessageView from "../views/MessageView.vue";
 import NotFoundView from "../views/NotFoundView.vue";
 import SettingView from "../views/SettingView.vue";
 
@@ -26,6 +27,12 @@ const router = createRouter({
       path: "/friend",
       name: "Friends",
       component: FriendView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/message",
+      name: "Message",
+      component: MessageView,
       meta: { requiresAuth: true },
     },
     {

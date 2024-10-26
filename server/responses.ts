@@ -1,7 +1,6 @@
 import { Authing } from "./app";
 import { AlreadyFriendsError, FriendNotFoundError, FriendRequestAlreadyExistsError, FriendRequestDoc, FriendRequestNotFoundError, FriendshipDoc } from "./concepts/friending";
 import { PostAuthorNotMatchError, PostDoc } from "./concepts/posting";
-import { LabelDoc } from "concepts/labelling";
 import { Router } from "./framework/router";
 
 /**

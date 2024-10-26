@@ -255,15 +255,15 @@ class Routes {
     return allMessages;
   }
 
-  @Router.post("/message/send")
-  async sendMessage(session: SessionDoc, receiverName: string, messageItemID: string, messageContent: string) {
+  @Router.post("/message/send/:receiverName")
+  async sendMessage(session: SessionDoc, receiverName: string, messageContent: string, messageItemID?: string) {
     const user = Sessioning.getUser(session);
 
     const receiverID = (await Authing.getUserByUsername(receiverName))._id;
-    const messageID = await Messaging.createMessage(messageItemID === undefined ? undefined : new ObjectId(messageItemID), messageContent);
+    const messageID = await Messaging.createMessage((messageItemID === undefined || messageItemID == null)? undefined : new ObjectId(messageItemID), messageContent);
     // this message should be accessible for both sender and receiver
     const itemInMessage = (await Messaging.getMessageItem(messageID))["msg"].item;
-    if (itemInMessage !== undefined) {
+    if (itemInMessage !== undefined && itemInMessage !== null ) {
       const authorOfItem = await Posting.getAuthorOfPost(itemInMessage);
       const userClear = (await Friending.isFriend(authorOfItem, user)) || authorOfItem.toString() == user.toString();
       const receiverClear = (await Friending.isFriend(authorOfItem, receiverID)) || authorOfItem.toString() == receiverID.toString();
@@ -273,6 +273,14 @@ class Routes {
     }
     await Messaging.sendMessage(user, receiverID, messageID);
     return { msg: `Message ${messageID} sent to ${receiverName}`, id: messageID };
+  }
+
+  @Router.get("/message/get/:friendUsername")
+  async getMessageWithFriend(session: SessionDoc, friendUsername: string) {
+    const userID = Sessioning.getUser(session);
+    const friendID = (await Authing.getUserByUsername(friendUsername))._id;
+    await Friending.assertFriends(userID, friendID);
+    return Messaging.getAllMessageinConversion(userID, friendID);
   }
 
   @Router.get("/message/search")
