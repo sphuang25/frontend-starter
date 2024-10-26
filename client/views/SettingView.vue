@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import UpdateInterfaceForm from "@/components/Interface/UpdateInterfaceForm.vue";
 import router from "@/router";
 import { useUserStore } from "@/stores/user";
 import { storeToRefs } from "pinia";
@@ -23,6 +24,7 @@ async function delete_() {
     <h1>Settings for {{ currentUsername }}</h1>
     <button class="pure-button pure-button-primary" @click="logout">Logout</button>
     <button class="button-error pure-button" @click="delete_">Delete User</button>
+    <UpdateInterfaceForm />
     <UpdateUserForm />
   </main>
 </template>

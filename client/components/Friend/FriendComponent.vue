@@ -2,40 +2,41 @@
 import { useUserStore } from "@/stores/user";
 import { formatDate } from "@/utils/formatDate";
 import { storeToRefs } from "pinia";
+import { onMounted, ref } from "vue";
 import { fetchy } from "../../utils/fetchy";
-const props = defineProps(["request"]);
-const emit = defineEmits(["refreshRequests", "refreshFriends"]);
+const props = defineProps(["friend"]);
+const emit = defineEmits(["refreshFriends"]);
 const { currentUsername } = storeToRefs(useUserStore());
 
-const acceptFriendRequest = async () => {
+const friendInterface = ref("");
+
+const removeFriend = async () => {
   try {
-    await fetchy(`/api/friend/accept/${props.request.from}`, "PUT");
+    await fetchy(`/api/friends/${props.friend.friendName}`, "DELETE");
   } catch {
     return;
   }
   emit("refreshFriends");
-  emit("refreshRequests");
 };
 
-const rejectFriendRequest = async () => {
-  try {
-    await fetchy(`/api/friend/reject/${props.request.from}`, "DELETE");
-  } catch {
-    return;
-  }
-  emit("refreshRequests");
+const getFriendInterface = async (friendName: string) => {
+  friendInterface.value = await fetchy(`/api/interface/check/${friendName}`, "GET");
 };
+
+onMounted(async () => {
+  await getFriendInterface(props.friend.friendName);
+});
 </script>
 
 <template>
-  <p class="sender">{{ props.request.from }}</p>
+  <p class="sender">{{ props.friend.friendName }}</p>
+  <p>Interface: {{ friendInterface }}</p>
   <div class="base">
     <article class="timestamp">
-      <p>Request sent: {{ formatDate(props.request.dateCreated) }}</p>
+      <p>Friends since: {{ formatDate(props.friend.dateCreated) }}</p>
     </article>
-    <menu v-if="props.request.to == currentUsername">
-      <p><button class="btn-small pure-button" @click="acceptFriendRequest">Accept</button></p>
-      <p><button class="button-error btn-small pure-button" @click="rejectFriendRequest">Reject</button></p>
+    <menu>
+      <p><button class="btn-small pure-button" @click="removeFriend">Remove</button></p>
     </menu>
   </div>
 </template>

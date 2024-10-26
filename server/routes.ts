@@ -89,6 +89,7 @@ class Routes {
   async createPost(session: SessionDoc, content: string) {
     const user = Sessioning.getUser(session);
     const created = await Posting.create(user, content);
+    await Labelling.initializeLabel(created.postID);
     return { msg: created.msg, post: await Responses.post(created.post), id: created.postID };
   }
 
@@ -111,7 +112,8 @@ class Routes {
   @Router.get("/friends")
   async getFriends(session: SessionDoc) {
     const user = Sessioning.getUser(session);
-    return await Authing.idsToUsernames(await Friending.getFriends(user));
+    const username = (await Authing.getUserById(user)).username;
+    return Responses.friends(username, await Friending.getFriends(user));
   }
 
   @Router.delete("/friends/:friend")
@@ -124,7 +126,7 @@ class Routes {
   @Router.get("/friend/notfriend")
   async notFriend(session: SessionDoc) {
     const user = Sessioning.getUser(session);
-    const friendsName = await Authing.idsToUsernames(await Friending.getFriends(user));
+    const friendsName = await Authing.idsToUsernames(await Friending.getFriendNames(user));
     const allUserNames = (await Authing.getUsers("")).map((x) => x.username);
     const notFriendList = [];
     for (const uName of allUserNames) {
@@ -169,7 +171,7 @@ class Routes {
     return await Friending.rejectRequest(fromOid, user);
   }
 
-  @Router.post("/label/add")
+  @Router.post("/label/add/:id")
   async addLabel(session: SessionDoc, id: string, content: string) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(id);
@@ -179,14 +181,14 @@ class Routes {
     return { msg: label.msg };
   }
 
-  @Router.get("/label/check")
+  @Router.get("/label/check/:id")
   async checkLabel(session: SessionDoc, id: string) {
     const user = Sessioning.getUser(session);
     const oid = new ObjectId(id);
     await Posting.assertAuthorIsUser(oid, user);
 
     const label = await Labelling.getLabelDoc(oid);
-    return { msg: `Labels in this post: ${label.label}.` };
+    return label;
   }
 
   @Router.post("/label/removeIdx")
@@ -216,7 +218,7 @@ class Routes {
     await Friending.assertFriendsOrSelf(user, toCheckOid);
     const thisInterface = await Interfacing.getInterface(toCheckOid);
     const interfaceString: string = thisInterface;
-    return { msg: `User ${usernameToCheck} is on interface ${interfaceString}`, interfaceString: interfaceString };
+    return interfaceString;
   }
 
   @Router.post("/interface/set")
@@ -224,7 +226,9 @@ class Routes {
     const user = Sessioning.getUser(session);
     const interfaceItem = await Interfacing.getInterfaceEnumBystring(interfaceType);
     await Interfacing.switchInterface(user, interfaceItem);
-    return { msg: `You now have interface ${interfaceType}.`, interfaceType: interfaceType };
+    const interfaceString: string = interfaceType;
+    console.log(interfaceString);
+    return interfaceString;
   }
 
   @Router.post("/interface/poke")

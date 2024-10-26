@@ -47,6 +47,7 @@
   },
   "dependencies": {
     "@popperjs/core": "^2.11.8",
+    "@vueform/toggle": "^2.1.4",
     "bootstrap": "^5.3.3",
     "connect-mongo": "^5.0.0",
     "cors": "^2.8.5",
@@ -58,10 +59,13 @@
     "morgan": "^1.10.0",
     "pinia": "^2.2.2",
     "pinia-plugin-persistedstate": "^4.0.2",
+    "primevue": "^4.1.1",
     "purecss": "^3.0.0",
     "reflect-metadata": "^0.1.13",
     "vue": "^3.5.9",
     "vue-router": "^4.4.5",
+    "vue-toggle-button": "^1.0.1",
+    "vuejs-toggle-switch": "^3.0.6",
     "zod": "^3.23.8"
   },
   "prettier": {

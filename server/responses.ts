@@ -1,6 +1,7 @@
 import { Authing } from "./app";
-import { AlreadyFriendsError, FriendNotFoundError, FriendRequestAlreadyExistsError, FriendRequestDoc, FriendRequestNotFoundError } from "./concepts/friending";
+import { AlreadyFriendsError, FriendNotFoundError, FriendRequestAlreadyExistsError, FriendRequestDoc, FriendRequestNotFoundError, FriendshipDoc } from "./concepts/friending";
 import { PostAuthorNotMatchError, PostDoc } from "./concepts/posting";
+import { LabelDoc } from "concepts/labelling";
 import { Router } from "./framework/router";
 
 /**
@@ -26,7 +27,6 @@ export default class Responses {
     const authors = await Authing.idsToUsernames(posts.map((post) => post.author));
     return posts.map((post, i) => ({ ...post, author: authors[i] }));
   }
-
   /**
    * Convert FriendRequestDoc into more readable format for the frontend
    * by converting the ids into usernames.
@@ -36,6 +36,18 @@ export default class Responses {
     const to = requests.map((request) => request.to);
     const usernames = await Authing.idsToUsernames(from.concat(to));
     return requests.map((request, i) => ({ ...request, from: usernames[i], to: usernames[i + requests.length] }));
+  }
+
+  static async friends(username: string, friends: FriendshipDoc[]) {
+    const user1s = friends.map((request) => request.user1);
+    const user2s = friends.map((request) => request.user2);
+    const usernames = await Authing.idsToUsernames(user1s.concat(user2s));
+    return friends.map((request, i) => ({
+      ...request,
+      user1: usernames[i],
+      user2: usernames[i + friends.length],
+      friendName: usernames[i] === username ? usernames[i + friends.length] : usernames[i],
+    }));
   }
 }
 

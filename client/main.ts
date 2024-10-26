@@ -1,6 +1,7 @@
 import "@/assets/main.css";
 import "purecss";
 
+import "@vueform/toggle";
 import "bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { createPinia } from "pinia";

@@ -41,6 +41,15 @@ export default class LabellingConcept {
     return labelsOfItem;
   }
 
+  async initializeLabel(item: ObjectId) {
+    var labelsOfItem = await this.getLabelsOfItem(item);
+    if (labelsOfItem.length === 0) {
+      await this.labels.createOne({ item, label: [] });
+    } else {
+      throw new NotAllowedError("should not call initialize when there is label already");
+    }
+  }
+
   async appendLabel(item: ObjectId, content: string) {
     var labelsOfItem = await this.getLabelsOfItem(item);
 

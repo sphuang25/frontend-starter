@@ -7,7 +7,7 @@ export const useUserStore = defineStore(
   "user",
   () => {
     const currentUsername = ref("");
-
+    const currentInterface = ref("");
     const isLoggedIn = computed(() => currentUsername.value !== "");
 
     const resetStore = () => {
@@ -53,12 +53,13 @@ export const useUserStore = defineStore(
       resetStore();
     };
 
-    const getFriends = async () => {
-      await fetchy("/api/friends", "GET");
+    const getInterface = async () => {
+      currentInterface.value = await fetchy(`api/interface/check/${currentUsername.value}`, "GET");
     };
 
-    const getFriendRequests = async () => {
-      await fetchy("/api/friend/requests", "GET");
+    const setInterface = async (newInterfaceValue: string) => {
+      currentInterface.value = newInterfaceValue;
+      await fetchy(`api/interface/set`, "POST", { body: { interfaceType: currentInterface.value } });
     };
 
     return {
@@ -71,8 +72,9 @@ export const useUserStore = defineStore(
       updateUserUsername,
       updateUserPassword,
       deleteUser,
-      getFriends,
-      getFriendRequests,
+      currentInterface,
+      getInterface,
+      setInterface,
     };
   },
   { persist: true },

@@ -6,6 +6,7 @@ import { useUserStore } from "@/stores/user";
 import { fetchy } from "@/utils/fetchy";
 import { storeToRefs } from "pinia";
 import { onBeforeMount, ref } from "vue";
+import EditLabelForm from "../Label/EditLabelForm.vue";
 import SearchPostForm from "./SearchPostForm.vue";
 
 const { isLoggedIn } = storeToRefs(useUserStore());
@@ -13,6 +14,7 @@ const { isLoggedIn } = storeToRefs(useUserStore());
 const loaded = ref(false);
 let posts = ref<Array<Record<string, string>>>([]);
 let editing = ref("");
+let labelling = ref("");
 let searchAuthor = ref("");
 
 async function getPosts(author?: string) {
@@ -29,6 +31,10 @@ async function getPosts(author?: string) {
 
 function updateEditing(id: string) {
   editing.value = id;
+}
+
+function updateLabelling(id: string) {
+  labelling.value = id;
 }
 
 onBeforeMount(async () => {
@@ -49,8 +55,9 @@ onBeforeMount(async () => {
   </div>
   <section class="posts" v-if="loaded && posts.length !== 0">
     <article v-for="post in posts" :key="post._id">
-      <PostComponent v-if="editing !== post._id" :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
-      <EditPostForm v-else :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
+      <EditLabelForm v-if="labelling === post._id" :post="post" @refreshPosts="getPosts" @editLabel="updateLabelling" />
+      <EditPostForm v-else-if="editing === post._id" :post="post" @refreshPosts="getPosts" @editPost="updateEditing" />
+      <PostComponent v-else :post="post" @refreshPosts="getPosts" @editLabel="updateLabelling" @editPost="updateEditing" />
     </article>
   </section>
   <p v-else-if="loaded">No posts found</p>

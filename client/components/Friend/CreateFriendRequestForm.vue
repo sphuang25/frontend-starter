@@ -23,7 +23,7 @@ const emptyForm = () => {
 <template>
   <form @submit.prevent="createFriendRequest(content)">
     <label for="content"></label>
-    <textarea id="content" v-model="content" placeholder="type in the username..." required> </textarea>
+    <input id="content" v-model="content" placeholder="type in the username..." />
     <button type="submit" class="pure-button-primary pure-button">Send Request</button>
   </form>
 </template>

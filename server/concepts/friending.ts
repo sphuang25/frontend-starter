@@ -75,6 +75,14 @@ export default class FriendingConcept {
       $or: [{ user1: user }, { user2: user }],
     });
     // Making sure to compare ObjectId using toString()
+    return friendships;
+  }
+
+  async getFriendNames(user: ObjectId) {
+    const friendships = await this.friends.readMany({
+      $or: [{ user1: user }, { user2: user }],
+    });
+    // Making sure to compare ObjectId using toString()
     return friendships.map((friendship) => (friendship.user1.toString() === user.toString() ? friendship.user2 : friendship.user1));
   }
 
@@ -128,6 +136,9 @@ export default class FriendingConcept {
   }
 
   private async canSendRequest(u1: ObjectId, u2: ObjectId) {
+    if (u1.toString() === u2.toString()) {
+      throw new AddSelfError();
+    }
     await this.assertNotFriends(u1, u2);
     // check if there is pending request between these users
     const request = await this.requests.readOne({
@@ -174,6 +185,12 @@ export class AlreadyFriendsError extends NotAllowedError {
     public readonly user2: ObjectId,
   ) {
     super("{0} and {1} are already friends!", user1, user2);
+  }
+}
+
+export class AddSelfError extends NotAllowedError {
+  constructor() {
+    super("You can not send a friend request to yourself!");
   }
 }
 

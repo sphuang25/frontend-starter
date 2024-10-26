@@ -5,7 +5,7 @@ import { storeToRefs } from "pinia";
 import { fetchy } from "../../utils/fetchy";
 
 const props = defineProps(["post"]);
-const emit = defineEmits(["editPost", "refreshPosts"]);
+const emit = defineEmits(["editPost", "editLabel", "refreshPosts"]);
 const { currentUsername } = storeToRefs(useUserStore());
 
 const deletePost = async () => {
@@ -23,6 +23,7 @@ const deletePost = async () => {
   <p>{{ props.post.content }}</p>
   <div class="base">
     <menu v-if="props.post.author == currentUsername">
+      <li><button class="btn-small pure-button" @click="emit('editLabel', props.post._id)">Edit Label</button></li>
       <li><button class="btn-small pure-button" @click="emit('editPost', props.post._id)">Edit</button></li>
       <li><button class="button-error btn-small pure-button" @click="deletePost">Delete</button></li>
     </menu>
