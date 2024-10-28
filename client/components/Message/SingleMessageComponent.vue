@@ -11,7 +11,7 @@ const { currentUsername } = storeToRefs(useUserStore());
 let messageContent = ref<Array<Record<string, string>>>([]);
 let senderUsername = ref("");
 let senderMe = computed(() => senderUsername.value === currentUsername.value);
-let words = computed(() => messageContent.value.words);
+let words = computed(() => `${messageContent.value}`);
 
 const getMessageContent = async () => {
   messageContent.value = await fetchy(`/api/message/getContent/${props.message.message}`, "GET");
@@ -26,12 +26,12 @@ onBeforeMount(async () => {
 <template>
   <li v-if="senderMe">
     <p class="senderMe">{{ senderUsername }}</p>
-    <li class="timestampMe">Sent {{ formatDate(props.message.dateCreated) }}</li>
+    <p class="timestampMe">Sent {{ formatDate(props.message.dateCreated) }}</p>
     <p class="messagePadMe">{{ words }}</p>
   </li>
-  <li v-else>
+  <li v-if="!senderMe">
     <p class="senderFriend">{{ senderUsername }}</p>
-    <li class="timestampFriend">Sent {{ formatDate(props.message.dateCreated) }}</li>
+    <p class="timestampFriend">Sent {{ formatDate(props.message.dateCreated) }}</p>
     <p class="messagePadFriend">{{ words }}</p>
   </li>
 </template>
