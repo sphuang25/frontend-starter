@@ -8,13 +8,13 @@ import { fetchy } from "../../utils/fetchy";
 const props = defineProps(["message", "friend"]);
 const { currentUsername } = storeToRefs(useUserStore());
 
-let messageContent = ref<Array<Record<string, string>>>([]);
+let messageContent = ref("");
 let senderUsername = ref("");
 let senderMe = computed(() => senderUsername.value === currentUsername.value);
-let words = computed(() => `${messageContent.value}`);
+let words = computed(() => messageContent.value);
 
 const getMessageContent = async () => {
-  messageContent.value = await fetchy(`/api/message/getContent/${props.message.message}`, "GET");
+  messageContent.value = (await fetchy(`/api/message/getContent/${props.message.message}`, "GET")).words;
   senderUsername.value = await fetchy(`/api/users/getID/${props.message.sender}`, "GET");
 };
 

@@ -26,7 +26,7 @@ onBeforeMount(async () => {
     <nav>
       <div class="title">
         <img src="@/assets/images/logo.svg" />
-        <p v-if="currentInterface == 'Focus'">
+        <p v-if="currentInterface == 'Focus' && !isLoggedIn">
           <RouterLink :to="{ name: 'Focus' }">
             <h1>Grasp</h1>
           </RouterLink>
