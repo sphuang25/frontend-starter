@@ -26,6 +26,11 @@ class Routes {
     return await Authing.getUsers();
   }
 
+  @Router.get("/users/getID/:id")
+  async getUsernameByID(id: string){
+    return (await Authing.idsToUsernames([new ObjectId(id)]))[0]
+  }
+
   @Router.get("/users/:username")
   @Router.validate(z.object({ username: z.string().min(1) }))
   async getUser(username: string) {
@@ -255,6 +260,18 @@ class Routes {
     return allMessages;
   }
 
+  @Router.get("/message/getContent/:id")
+  async getMessageContent(session: SessionDoc, id: string) {
+    const user = Sessioning.getUser(session);
+    const _id = new ObjectId(id);
+    const messageRecord = await Messaging.getMessageRecord(_id);
+    if (user.toString() === messageRecord.sender.toString() ||user.toString() === messageRecord.receiver.toString()){
+      return Messaging.getMessageItem(_id);
+    } else {
+      throw new Error ("This message content does not belong to you.")
+    }
+  }
+
   @Router.post("/message/send/:receiverName")
   async sendMessage(session: SessionDoc, receiverName: string, messageContent: string, messageItemID?: string) {
     const user = Sessioning.getUser(session);
@@ -262,7 +279,7 @@ class Routes {
     const receiverID = (await Authing.getUserByUsername(receiverName))._id;
     const messageID = await Messaging.createMessage((messageItemID === undefined || messageItemID == null)? undefined : new ObjectId(messageItemID), messageContent);
     // this message should be accessible for both sender and receiver
-    const itemInMessage = (await Messaging.getMessageItem(messageID))["msg"].item;
+    const itemInMessage = (await Messaging.getMessageItem(messageID)).item;
     if (itemInMessage !== undefined && itemInMessage !== null ) {
       const authorOfItem = await Posting.getAuthorOfPost(itemInMessage);
       const userClear = (await Friending.isFriend(authorOfItem, user)) || authorOfItem.toString() == user.toString();
@@ -274,6 +291,8 @@ class Routes {
     await Messaging.sendMessage(user, receiverID, messageID);
     return { msg: `Message ${messageID} sent to ${receiverName}`, id: messageID };
   }
+
+
 
   @Router.get("/message/get/:friendUsername")
   async getMessageWithFriend(session: SessionDoc, friendUsername: string) {

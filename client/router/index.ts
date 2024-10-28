@@ -2,6 +2,7 @@ import { storeToRefs } from "pinia";
 import { createRouter, createWebHistory } from "vue-router";
 
 import { useUserStore } from "@/stores/user";
+import FocusView from "../views/FocusView.vue";
 import FriendView from "../views/FriendView.vue";
 import HomeView from "../views/HomeView.vue";
 import LoginView from "../views/LoginView.vue";
@@ -33,6 +34,12 @@ const router = createRouter({
       path: "/message",
       name: "Message",
       component: MessageView,
+      meta: { requiresAuth: true },
+    },
+    {
+      path: "/focus",
+      name: "Focus",
+      component: FocusView,
       meta: { requiresAuth: true },
     },
     {

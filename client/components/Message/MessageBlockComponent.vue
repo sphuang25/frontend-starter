@@ -20,11 +20,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <p>{{ props.friend.friendName }}</p>
-  <article v-for="message in messages" :key="message._id">
-    <SingleMessageComponent :message="message" />
-  </article>
-  <SendMessageForm :friend="props.friend" @refreshMessages="getMessage" />
+  <p class="sender">Chat with {{ props.friend.friendName }}</p>
+  <menuBlock>
+    <article v-for="message in messages" :key="message._id">
+      <SingleMessageComponent :message="message" />
+    </article>
+    <SendMessageForm :friend="props.friend" @refreshMessages="getMessage" />
+  </menuBlock>
 </template>
 
 <style scoped>
@@ -35,6 +37,17 @@ p {
 .sender {
   font-weight: bold;
   font-size: 1.2em;
+}
+
+menuBlock {
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  gap: 1em;
+  padding: 1;
+  margin: 0;
+  max-height: 20em;
+  overflow: scroll;
 }
 
 menu {

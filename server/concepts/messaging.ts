@@ -50,7 +50,7 @@ export default class MessagingConcept {
 
     const itemID: ObjectId | undefined = message.item;
     // throw new MessageNotExistError(message);
-    return { msg: message };
+    return message;
   }
 
   async sendMessage(sender: ObjectId, receiver: ObjectId, message: ObjectId) {

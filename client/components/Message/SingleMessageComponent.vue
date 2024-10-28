@@ -2,19 +2,38 @@
 import { useUserStore } from "@/stores/user";
 import { formatDate } from "@/utils/formatDate";
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import { computed, onBeforeMount, ref } from "vue";
+import { fetchy } from "../../utils/fetchy";
 
-const props = defineProps(["message"]);
-const emit = defineEmits(["refreshFriends"]);
+const props = defineProps(["message", "friend"]);
 const { currentUsername } = storeToRefs(useUserStore());
-const messages = ref<Array<Record<string, string>>>([]);
 
-const content = ref("");
+let messageContent = ref<Array<Record<string, string>>>([]);
+let senderUsername = ref("");
+let senderMe = computed(() => senderUsername.value === currentUsername.value);
+let words = computed(() => messageContent.value.words);
+
+const getMessageContent = async () => {
+  messageContent.value = await fetchy(`/api/message/getContent/${props.message.message}`, "GET");
+  senderUsername.value = await fetchy(`/api/users/getID/${props.message.sender}`, "GET");
+};
+
+onBeforeMount(async () => {
+  await getMessageContent();
+});
 </script>
 
 <template>
-  <p>{{ props.message.message }}</p>
-  <p>Sent {{ formatDate(props.message.dateCreated) }}</p>
+  <li v-if="senderMe">
+    <p class="senderMe">{{ senderUsername }}</p>
+    <li class="timestampMe">Sent {{ formatDate(props.message.dateCreated) }}</li>
+    <p class="messagePadMe">{{ words }}</p>
+  </li>
+  <li v-else>
+    <p class="senderFriend">{{ senderUsername }}</p>
+    <li class="timestampFriend">Sent {{ formatDate(props.message.dateCreated) }}</li>
+    <p class="messagePadFriend">{{ words }}</p>
+  </li>
 </template>
 
 <style scoped>
@@ -22,9 +41,32 @@ p {
   margin: 0em;
 }
 
-.sender {
+.senderMe {
   font-weight: bold;
   font-size: 1.2em;
+  text-align: right;
+}
+
+.senderFriend {
+  font-weight: bold;
+  font-size: 1.2em;
+  text-align: left;
+}
+
+.messagePadMe {
+  padding: 1em;
+  width: 10em;
+  background-color: greenyellow;
+  text-align: right;
+  float: right;
+}
+
+.messagePadFriend {
+  padding: 1em;
+  width: 10em;
+  background-color: greenyellow;
+  text-align: left;
+  float: left;
 }
 
 menu {
@@ -36,11 +78,20 @@ menu {
   margin: 0;
 }
 
-.timestamp {
+.timestampFriend {
   display: flex;
   justify-content: flex-end;
-  font-size: 0.9em;
+  font-size: 0.6em;
   font-style: italic;
+  float: left;
+}
+
+.timestampMe {
+  display: flex;
+  justify-content: flex-end;
+  font-size: 0.6em;
+  font-style: italic;
+  float: right;
 }
 
 .base {

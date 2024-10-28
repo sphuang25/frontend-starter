@@ -8,7 +8,7 @@ import { RouterLink, RouterView, useRoute } from "vue-router";
 const currentRoute = useRoute();
 const currentRouteName = computed(() => currentRoute.name);
 const userStore = useUserStore();
-const { isLoggedIn, currentUsername } = storeToRefs(userStore);
+const { isLoggedIn, currentUsername, currentInterface } = storeToRefs(userStore);
 const { toast } = storeToRefs(useToastStore());
 
 // Make sure to update the session before mounting the app in case the user is already logged in
@@ -26,20 +26,32 @@ onBeforeMount(async () => {
     <nav>
       <div class="title">
         <img src="@/assets/images/logo.svg" />
-        <RouterLink :to="{ name: 'Home' }">
-          <h1>Grasp</h1>
-        </RouterLink>
+        <p v-if="currentInterface == 'Focus'">
+          <RouterLink :to="{ name: 'Focus' }">
+            <h1>Grasp</h1>
+          </RouterLink>
+        </p>
+        <p v-else>
+          <RouterLink :to="{ name: 'Home' }">
+            <h1>Grasp</h1>
+          </RouterLink>
+        </p>
       </div>
       <ul>
-        <li>
+        <li v-if="currentInterface == 'Focus'">
+          <RouterLink :to="{ name: 'Focus' }" :class="{ underline: currentRouteName == 'Focus' }"> Focus </RouterLink>
+        </li>
+        <li v-else>
           <RouterLink :to="{ name: 'Home' }" :class="{ underline: currentRouteName == 'Home' }"> Home </RouterLink>
         </li>
-        <li v-if="isLoggedIn">
+        <li v-if="isLoggedIn && currentInterface != 'Focus'">
           <RouterLink :to="{ name: `Settings` }" :class="{ underline: currentRouteName == 'Settings' }"> Settings </RouterLink>
           <RouterLink :to="{ name: 'Friends' }" :class="{ underline: currentRouteName == 'Friends' }"> Friends </RouterLink>
           <RouterLink :to="{ name: 'Message' }" :class="{ underline: currentRouteName == 'Message' }"> Message </RouterLink>
         </li>
-
+        <li v-else-if="isLoggedIn">
+          <RouterLink :to="{ name: `Settings` }" :class="{ underline: currentRouteName == 'Settings' }"> Settings </RouterLink>
+        </li>
         <li v-else>
           <RouterLink :to="{ name: 'Login' }" :class="{ underline: currentRouteName == 'Login' }"> Login </RouterLink>
         </li>
@@ -73,6 +85,7 @@ h1 {
 h3 {
   font-size: 1em;
   margin: 0;
+  text-align: right;
 }
 
 .title {
